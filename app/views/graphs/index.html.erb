@@ -1,0 +1,167 @@
+
+    <div id="wrapper">
+        <%= render "./partials/left_navbar" %>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="nav navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" role="menu" aria-labelledby="searchDropdown">
+                                    <form class="form-inline mr-auto navbar-search w-100">
+                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                            <%= render "./partials/notification_navbar" %>
+                            <div class="d-none d-sm-block topbar-divider"></div>
+                            <%= render "./partials/dropdown_menu" %>
+                    </ul>
+            </div>
+            </nav>
+            <div class="d-sm-flex justify-content-between align-items-center mb-4" style="padding-left: 28px;padding-right: 28px;">
+                <h3 class="text-dark mb-0">Gráficas</h3></div>
+            <div class="container-fluid">
+                <div class="card shadow">
+                    <div class="card-body">
+                      <form method="GET" action="/graphs">
+                      <div class="row align-items-center" style="padding-bottom:1.5rem">
+                          <div class="col">
+                              <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
+                                  <label for="graphs_select" style="padding-right:5px">Cliente:</label>
+                                  <select name="graph[client]" id="graph_client" required style="width:90px; margin-right:10px" class="form-control form-control-sm custom-select custom-select-sm" >
+                                    <option value=""></option>
+                                    <% if @client.present?%>
+                                      <option value="<%= @client %>" selected><%= Client.find(@client).name %></option>
+                                    <% end %>
+                                  </select>
+                                  <label for="graphs_select" style="padding-right:5px">Gateway:</label>
+                                  <select name="graph[gateway]" id="graph_gateway" required style="width:75px; margin-right:10px" class="form-control form-control-sm custom-select custom-select-sm" >
+                                    <option value=""></option>
+                                    <% if @gateway.present?%>
+                                      <option value="<%= @gateway %>" selected><%= @gateway %></option>
+                                    <% end %>
+                                  </select>
+                                  <label for="graphs_select" style="padding-right:5px">Elemento:</label>
+                                  <select name="graph[element]" id="graph_element" required style="width:110px; margin-right:10px" class="form-control form-control-sm custom-select custom-select-sm" >
+                                    <option value=""></option>
+                                    <option value="1" <% if @element == "1"%> selected <% end %>>Motores</option>
+                                    <option value="2" <% if @element == "2"%> selected <% end %>>Dispositivo</option>
+                                    <option value="3" <% if @element == "3"%> selected <% end %>>Hardware</option>
+                                  </select>
+
+                                  <label for="client" style="padding-right:5px">Dispositivo:</label>
+                                  <select disabled name="graph[device]" id="graph_device" style="width:185px; margin-right:10px" class="form-control form-control-sm custom-select custom-select-sm">
+                                    <option value=""></option>
+                                    <% if @device.present?%>
+                                      <option value="<%= @device %>"><%= @device %></option>
+                                    <% end %>
+                                  </select>
+                                <br>
+                                  <label for="start_time_from" style="padding-right:5px;">Periodo de tiempo:</label>
+                                  <select name="graph[time_range]" id="time_range" style="width:160px; margin-right:10px" class="form-control form-control-sm custom-select custom-select-sm">
+                                    <option value="1" <% if @time_range == "1"%> selected <% end %>>Hoy</option>
+                                    <option value="2" <% if @time_range == "2"%> selected <% end %>>Ayer</option>
+                                    <option value="3" <% if @time_range == "3"%> selected <% end %>>Esta semana</option>
+                                    <option value="4" <% if @time_range == "4"%> selected <% end %>>La semana pasada</option>
+                                    <option value="5" <% if @time_range == "5"%> selected <% end %>>Este mes</option>
+                                    <option value="6" <% if @time_range == "6"%> selected <% end %>>El mes pasado</option>
+                                  </select>
+                              </div>
+                          </div>
+                          <div class="col-sm-2 text-center">
+                            <button class="btn btn-secondary" type="submit">Graficar</button>
+                          </div>
+                      </div>
+                      </form>
+                      <% case @element %>
+                      <% when "1" #Engines %>
+                      <% @engines.each do |engine|%>
+                      <h4 class="text-dark mb-0" style="text-align:center"><%= engine.name %></h4>
+                      <%= area_chart(@data[engine.id], curve: true, points: false, xtitle: "Tiempo", ytitle: "Estado", min: 0, max: 2 ) %>
+
+                      <% end %>
+
+                      <% when "2" #Device %>
+                      <% when "3" #Hardware %>
+                      <% end %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="text-center my-auto copyright"><span>Copyright © Neykos 2020</span></div>
+            </div>
+        </footer>
+      </div>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+  </div>
+  <script type="text/javascript">
+    var clients;
+    var gateways;
+    $.ajax({
+      url: "/clients",
+      method: "GET",
+      dataType: "json",
+      error: function (xhr, status, error) {
+          console.error('AJAX Error: ' + status + error);
+      },
+      success: function (response) {
+          clients = response["clients"];
+          for(var i = 0; i < clients.length; i++){
+            $("#graph_client").append('<option value="' + clients[i]["id"] + '">' +clients[i]["name"] + '</option>');
+          }
+      }
+    });
+
+    $("#graph_client").change(function(){
+      var value = $(this).val();
+      if (value == ""){
+        $("#graph_gateway").empty();
+        $("#graph_gateway").append('<option value=""></option>');
+        $("#graph_device").empty();
+        $("#graph_device").append('<option value=""></option>');
+        return;
+      }
+      var client = clients[value-1];
+      gateways = client["gateways"]
+      $("#graph_gateway").empty();
+      $("#graph_gateway").append('<option value=""></option>');
+      $("#graph_device").empty();
+      $("#graph_device").append('<option></option>');
+      for(var i = 0; i < gateways.length; i++){
+        $("#graph_gateway").append('<option value="' + gateways[i]["gateway_id"] + '">' +gateways[i]["gateway_id"] + '</option>');
+      }
+
+    });
+
+    $("#graph_gateway").change(function(){
+      var value = $(this).val();
+      if (value == ""){
+        $("#graph_device").empty();
+        $("#graph_device").append('<option value=""></option>');
+        return;
+      }
+      gateway = gateways[value-1];
+      var devices = gateway["devices"]
+      $("#graph_device").empty();
+      $("#graph_device").append('<option value=""></option>');
+      for(var i = 0; i < devices.length; i++){
+        $("#graph_device").append('<option value="' + devices[i]["name"] + '">' +devices[i]["name"] + '</option>');
+      }
+
+    });
+
+    $("#graph_element").change(function(){
+      if($(this).val()=="2"){
+        $("#graph_device").prop("disabled", false);
+      } else {
+        $("#graph_device").prop("disabled", true);
+        $('#graph_device option[value=""]').prop('selected', true);
+      }
+
+    });
+  </script>

@@ -1,0 +1,2 @@
+class NotificationLevel < ApplicationRecord
+end

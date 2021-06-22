@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  hardware_id: Id
+  cpu_percent: 1.5
+  memory_available: 1.5
+  memory_total: 1.5
+  memory_percent: 1.5
+  disk_free: 1.5
+  disk_total: 1.5
+  disk_percent: 1.5
+  temperature: 1.5
+  updated_at: fecha
+
+two:
+  hardware_id: id2
+  cpu_percent: 1.5
+  memory_available: 1.5
+  memory_total: 1.5
+  memory_percent: 1.5
+  disk_free: 1.5
+  disk_total: 1.5
+  disk_percent: 1.5
+  temperature: 1.5
+  updated_at: fecha

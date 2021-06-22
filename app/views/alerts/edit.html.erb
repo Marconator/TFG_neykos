@@ -1,0 +1,135 @@
+
+    <div id="wrapper">
+        <%= render "./partials/left_navbar" %>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="nav navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" role="menu" aria-labelledby="searchDropdown">
+                                    <form class="form-inline mr-auto navbar-search w-100">
+                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                            <%= render "./partials/notification_navbar" %>
+                            <div class="d-none d-sm-block topbar-divider"></div>
+                            <%= render "./partials/dropdown_menu" %>
+                    </ul>
+            </div>
+            </nav>
+            <div class="d-sm-flex justify-content-between align-items-center mb-4" style="padding-left: 28px;padding-right: 28px;">
+                <h3 class="text-dark mb-0">Editar alerta</h3>
+                <form method="POST" action="./" data-remote='true'>
+                  <input name='_method' type='hidden' value='delete' />
+                <button  class="btn btn-danger" data-confirm='¿Deseas eliminar esta alerta?' style="margin-left: 10px; type="submit"><i class="fas fa-trash fa-fw"></i> Eliminar alerta</button>
+                </form></div>
+            <div class="d-flex justify-content-center">
+                <div class="card shadow" style="width:500px">
+                    <div class="card-body">
+                      <form method="POST" action="./" data-remote='true'>
+                        <input name="_method" type="hidden" value="put"/>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Descripción</td>
+                                        <td><textarea name="alert[description]"><%= @alert.description %></textarea></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Variable de alerta</td>
+                                        <td><select name="alert[alert_type_id]" id="alert_alert_type_id">
+                                          <% @alerttype.each do |type| %>
+                                            <option <% if (@alert.alert_type_id == type.id)%> selected<% end %> value="<%=type.id%>"><%= type.name %></option>
+                                          <% end %>
+                                          </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Signo</td>
+                                        <td><select name="alert[sign]" id="sign"><option <% if @alert.sign %> selected <% end %> value="true">Mayor que</option><option value="false" <% if !@alert.sign %> selected <% end %> >Menor que</option></select></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Límite</td>
+                                        <td><input value="<%=@alert.limit%>" id="limit" name="alert[limit]" type="number" step="0.1" min="0" max="100" style="width: 67px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Persistencia</td>
+                                        <td><input value="<%=@alert.persistence%>" id="persistence" name="alert[persistence]" type="number" step="0.5" min="0" style="width: 67px;"> minutos</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nivel de alerta</td>
+                                        <td><select name="alert[notification_level_id]" id="notification_level_id">
+                                          <% @notificationLevels.each do |level| %>
+                                            <option <% if (@alert.notification_level_id == level.id)%> selected<% end %> value="<%=level.id%>"><%= level.name %></option>
+                                            <% end %>
+                                          </select>
+                                          <small id="notificationLevelHelpBlock" class="form-text text-muted">
+                                          <% @notificationLevels.each do |level| %>
+                                              <%= level.name + ": " + level.description  %><br>
+                                          <% end %>
+                                          </small>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                      <td>Notificar estabilización</td>
+                                      <td><select name="alert[notify_stability]"><option value="true">Sí</option><option value="false" <% if (!@alert.notify_stability)%> selected<% end %>>No</option></select></td>
+                                    </tr>
+                                    <tr>
+                                    <tr>
+                                      <td>Notificar por</td>
+                                      <td>
+                                        <div class="form-check form-check-inline">
+                                          <input class="form-check-input" type="checkbox" name="alert[notify_app]" id="inlineCheckbox1" value="true" <% if @alert.notify_app %> checked<% end %>>
+                                          <label class="form-check-label" for="inlineCheckbox1">Aplicación</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                          <input class="form-check-input" type="checkbox" name="alert[notify_email]" id="inlineCheckbox2" value="true" <% if @alert.notify_email %> checked<% end %>>
+                                          <label class="form-check-label" for="inlineCheckbox2">Correo (al cliente)</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                          <input class="form-check-input" type="checkbox" name="alert[notify_slack]" id="inlineCheckbox3" value="true" <% if @alert.notify_slack %> checked<% end %>>
+                                          <label class="form-check-label" for="inlineCheckbox3">Slack</label>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cliente</td>
+                                        <td><select name="alert[client_id]">
+                                          <% @clients.each do |client| %>
+                                            <option <% if (@alert.client_id == client.id)%> selected<% end %> value="<%=client.id%>"><%= client.name %></option>
+                                          <% end %>
+                                          </select></td>
+                                    </tr>
+                                    <tr>
+                                        <td>ID de dispositivo</td>
+                                        <td><input value="<%=@alert.element_id%>" id="limit" name="alert[element_id]" type="number" min="0" style="width: 67px;"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <% flash.each do |type, msg| %>
+                          <div role="alert" class="alert alert-danger"><span><strong>Error al guardar alerta: </strong> <%= msg %></span></div>
+                        <% end %>
+                        <div class="d-xl-flex justify-content-xl-end">
+                          <a class="btn btn-secondary" role="button" style="color:white;" href="/alerts">Atrás</a>
+                          <button class="btn btn-primary d-xl-flex" type="submit" style="margin-left: 10px;">Guardar cambios</button></div>
+                      </form>
+                    </div>
+                </div>
+            </div>
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="text-center my-auto copyright"><span>Copyright © Neykos 2020</span></div>
+            </div>
+        </footer>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a></div>
+    <script type="text/javascript">
+    </script>

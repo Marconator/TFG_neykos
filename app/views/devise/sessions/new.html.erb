@@ -1,0 +1,35 @@
+<div class="wrapper bg-gradient-primary" style="height:100%">
+  <% flash.each do |type, msg| %>
+    <div role="alert" class="alert alert-danger"><span><strong>Error al iniciar sesión: </strong> <%= msg %></span></div>
+  <% end %>
+<div class="container">
+        <div class="row justify-content-center">
+            <div class="col-mx justify-content-center">
+                <div class="card shadow o-hidden border-0 my-5 alignment-center" style="width:500px">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h4 class="text-dark mb-4">Iniciar sesión</h4>
+                                    </div>
+                                    <form class="new_user" id="new_user" action="/users/sign_in" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                                        <div class="form-group"><input class="form-control form-control-user" autofocus="autofocus" autocomplete="email" placeholder="Corre electrónico" type="email" value="" name="user[email]" id="user_email"></div>
+                                        <div class="form-group"><input class="form-control form-control-user" autocomplete="current-password" placeholder="Contraseña" type="password" name="user[password]" id="user_password"></div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox small">
+                                                <div class="form-check"><input class="form-check-input custom-control-input" type="checkbox" id="formCheck-1"><label class="form-check-label custom-control-label" for="formCheck-1">Recordarme</label></div>
+                                            </div>
+                                        </div><button class="btn btn-primary btn-block text-white btn-user" type="submit">Iniciar sesión</button>
+                                        <hr>
+                                      </form>
+                                    <div class="text-center"><a class="small" href="forgot-password.html">Olvidé la contraseña</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

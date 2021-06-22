@@ -1,0 +1,252 @@
+
+    <div id="wrapper">
+        <%= render "./partials/left_navbar" %>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="nav navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" role="menu" aria-labelledby="searchDropdown">
+                                    <form class="form-inline mr-auto navbar-search w-100">
+                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                            <%= render "./partials/notification_navbar" %>
+                            <div class="d-none d-sm-block topbar-divider"></div>
+                            <%= render "./partials/dropdown_menu" %>
+                    </ul>
+            </div>
+            </nav>
+            <div class="d-sm-flex justify-content-between align-items-center mb-4" style="padding-left: 28px;padding-right: 28px;">
+                <h3 class="text-dark mb-0">Alertas</h3><a class="btn btn-success btn-sm d-none d-sm-inline-block" role="button" style="color:white;" data-toggle="modal" data-target="#CrearAlerta">Crear alerta</a></div>
+            <div class="modal fade" role="dialog" tabindex="-1" id="CrearAlerta">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Crear alerta</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button></div>
+                            <form method="POST" action="alerts" data-remote='true'>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Cliente:</td>
+                                            <td>
+                                              <select id="client" name="alert[client_id]">
+                                                <% @clients.each do |client| %>
+                                                <option value="<%=client.id%>"><%= client.name %></option>
+                                                <% end %>
+                                              </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ID del gateway:</td>
+                                            <td><input name="alert[gateway_id]" id="gateway_id" type="number" min="0" style="width: 67px;" required></td>
+                                        </tr>
+                                        <tr>
+                                          <td>Elemento a monitorizar:</td>
+                                          <td>
+                                            <select id="element" name="alert[element]">
+                                              <option value="device">Dispositivo</option>
+                                              <option value="engines">Motores</option>
+                                              <option value="hardware">Hardware</option>
+                                            </select>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ID del dispositivo:</td>
+                                            <td><input name="alert[element_id]" id="element_id" type="text" required></td>
+                                        </tr>
+                                        <tr>
+                                          <td>Variable de alerta:</td>
+                                          <td>
+                                            <%= select_tag("alert[alert_type_id]", options_from_collection_for_select(@alertType, 'id', 'name')) %>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td>Signo:</td>
+                                          <td><select id="sign" name="alert[sign]"><option value="true" selected="">Mayor que</option><option value="false">Menor que</option></select></td>
+                                        </tr>
+                                        <tr>
+                                          <td>Límite:</td>
+                                          <td><input value="50" name="alert[limit]" id="limit" type="number" step="0.1" min="0" max="100" style="width: 67px;"></td>
+                                        </tr>
+                                        <tr>
+                                          <td>Persistencia:</td>
+                                          <td><input value="0" name="alert[persistence]" id="persistence" type="number" step="0.5" min="0" style="width: 67px;"> minutos</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nivel de alerta:</td>
+                                            <td>
+                                              <%= select_tag("alert[notification_level_id]", options_from_collection_for_select(@notificationLevels, 'id', 'name')) %>
+                                              <small id="notificationLevelHelpBlock" class="form-text text-muted">
+                                                <% @notificationLevels.each do |level| %>
+                                                  <%= level.name + ": " + level.description  %><br>
+                                                <% end %>
+                                              </small>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Descripción (opcional):</td>
+                                            <td><textarea id="description" name="alert[description]"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                          <td>Notificar por:</td>
+                                          <td>
+                                            <div class="form-check form-check-inline">
+                                              <input class="form-check-input" type="checkbox" name="alert[notify_app]" id="inlineCheckbox1" value="true">
+                                              <label class="form-check-label" for="inlineCheckbox1">Aplicación</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                              <input class="form-check-input" type="checkbox" name="alert[notify_email]" id="inlineCheckbox2" value="true">
+                                              <label class="form-check-label" for="inlineCheckbox2">Correo (al cliente)</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                              <input class="form-check-input" type="checkbox" name="alert[notify_slack]" id="inlineCheckbox3" value="true">
+                                              <label class="form-check-label" for="inlineCheckbox3">Slack</label>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td>Notificar estabilización:</td>
+                                          <td><select id="notify_stability" name="alert[notify_stability]"><option value="true" selected="">Sí</option><option value="false">No</option></select></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer"><button class="btn btn-light" type="button" data-dismiss="modal">Atrás</button><button class="btn btn-primary" type="submit">Guardar</button></div>
+                            </form>
+                    </div>
+                </div>
+            </div>
+            <% flash.each do |type, msg| %>
+              <% if type == "alert_error" %>
+                <div role="alert" class="alert alert-danger"><span><strong>Error al guardar alerta: </strong> <%= msg %></span></div>
+              <% elsif type == "alert_success" %>
+                <div role="alert" class="alert alert-success"><span><strong><%= msg %></strong></span></div>
+              <% end %>
+            <% end %>
+            <div class="container-fluid">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                            <table class="table dataTable my-0" id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>ID del gateway</th>
+                                        <th>Elemento</th>
+                                        <th>ID del elemento</th>
+                                        <th>Variable de alerta</th>
+                                        <th>Signo</th>
+                                        <th>Límite</th>
+                                        <th>Persistencia</th>
+                                        <th>Nivel de alerta</th>
+                                        <th>Notifica estabilización</th>
+                                        <th>Descripción</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  <% @alerts.each do |alert| %>
+                                    <tr>
+                                        <td><%= alert.client.name %></td>
+                                        <td style="text-align:center"><%= alert.gateway_id %></td>
+                                        <td><%= case alert.element
+                                        when "engines"
+                                        "Motor"
+                                        when "device"
+                                        "Dispositivo"
+                                        when "hardware"
+                                        "Hardware"
+                                        end %></td>
+                                        <td><%= alert.element_id.nil? ? "-" : alert.element_id %></td>
+                                        <td><%= alert.alert_type.name %></td>
+                                        <td><%= !alert.sign.nil? ? ((alert.sign) ? ("Mayor que") : ("Menor que")) : "-"%></td>
+                                        <td><%= alert.limit.nil? ? "-" : alert.limit %></td>
+                                        <td><%= persistence = alert.persistence
+                                                persistence_msg = "-"
+                                                if persistence.to_i != 0
+                                                  number = (persistence.modulo(1) == 0) ? persistence.to_i : persistence
+                                                  minute_or_minutes = (number == 1) ? " minuto" : " minutos"
+                                                  persistence_msg = "#{number} #{minute_or_minutes}"
+                                                end
+                                                persistence_msg
+                                                %> </td>
+                                        <td><%= @notificationLevels.find(alert.notification_level_id).name %></td>
+                                        <td style="text-align:center">
+                                          <% if (alert.notify_stability)%>Sí<% else %>No<% end %>
+                                        </td>
+                                        <td><%= alert.description %></td>
+                                        <td>
+                                          <a class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button" style="color:white;" href="alerts/<%= alert.id %>/edit">Editar</a>
+                                        </td>
+                                    </tr>
+                                    <% end %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 align-self-center">
+                                <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando <%= (@count > 1) ? (@offset +1) : 0  %> a <%= (@count > @offset +@limit) ? (@offset +@limit) : @count%> de <%= @count%></p>
+                            </div>
+                            <div class="col-md-6">
+                                <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                                    <ul class="pagination">
+                                        <li class="page-item"><a class="page-link" href="/alerts" aria-label="First"><span aria-hidden="true">«</span></a></li>
+                                        <% @totalPages.times do |i|%>
+                                        <li class="page-item <% if @page == i+1%>active<%end%>"><a class="page-link" href="?page=<%= i+1 %>"><%= i+1 %></a></li>
+                                        <% end %>
+                                        <li class="page-item"><a class="page-link" href="?page=<%= @totalPages%>" aria-label="Last"><span aria-hidden="true">»</span></a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="text-center my-auto copyright"><span>Copyright © Neykos 2020</span></div>
+            </div>
+        </footer>
+      </div>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+  </div>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('#element').change(function(){
+          if(this.value == "engines"){
+            $('#sign').prop( "disabled", true );
+            $('#limit').prop( "disabled", true );
+            $('#alert_alert_type_id').prop( "disabled", true );
+            $('#element_id').prop( "disabled", true );
+          } else {
+            $('#element_id').prop( "disabled", false );
+            $('#sign').prop( "disabled", false );
+            $('#limit').prop( "disabled", false );
+            $('#alert_alert_type_id').prop( "disabled", false );
+          }
+        })
+
+        $('#alert_alert_type_id').change(function(){
+          if(this.value == "5" || this.value == "6"){
+            $('#limit').prop( "disabled", true );
+            $('#sign').prop( "disabled", true );
+          } else {
+            $('#sign').prop( "disabled", false );
+            $('#limit').prop( "disabled", false );
+          }
+        })
+
+      })
+    </script>

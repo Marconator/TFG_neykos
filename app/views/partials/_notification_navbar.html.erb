@@ -1,0 +1,54 @@
+<li class="nav-item dropdown no-arrow mx-1" role="presentation">
+    <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#">
+      <% if @allNotifications.present? %>
+      <span class="badge badge-danger badge-counter">
+        <%= @triggeredNotifications %>
+      </span>
+      <% end %>
+    <i class="fas fa-bell fa-fw"></i></a>
+        <div class="dropdown-menu dropdown-menu-right dropdown-list dropdown-menu-right animated--grow-in"
+            role="menu">
+            <h6 class="dropdown-header">Notificaciones</h6>
+            <% if @allNotifications.empty? %>
+            <a class="d-flex align-items-center dropdown-item">
+            <div class="mr-3">
+              <div><span class="small text-gray-500">No hay nuevas notificaciones.</span></div>
+            </div>
+            <% else %>
+              <% @allNotifications.each do |notification| %>
+                <a class="d-flex align-items-center dropdown-item" href="/notifications/<%= notification.id %>">
+                  <div class="mr-3">
+                    <% case notification.alert.notification_level_id %>
+                    <% when 1 %>
+                    <div class="bg-primary icon-circle">
+                    <% when 2 %>
+                    <div class="bg-warning icon-circle">
+                    <% when 3 %>
+                    <div class="bg-danger icon-circle">
+                    <% end %>
+                    <% if notification.triggered %>
+                      <i class="fas fa-exclamation-triangle text-white"></i></div>
+                    <% else %>
+                      <i class="fas fa-check text-white"></i></div>
+                    <% end %>
+                  </div>
+                <div>
+                    <% if !notification.triggered %>
+                      <span class="small text-gray-500">
+                        <%= time_ago_in_words(notification.end_time) + " ago"%>
+                      </span>
+                      <p><span class="text-gray-500"><%= notification.message %></span></p>
+                      <span class="small text-success">Esta alerta se estabilizó.</span>
+                    <% else %>
+                      <span class="small text-gray-500">
+                        <%= time_ago_in_words(notification.start_time) + " ago"%>
+                      </span>
+                      <p><%= notification.message %></p>
+                    <% end %>
+                </div>
+                </a>
+                <% end %>
+              <% end %>
+            <a class="text-center dropdown-item small text-white" style="background-color:#4e73df;" href="/notifications">Mostrar todas</a></div>
+    </div>
+</li>

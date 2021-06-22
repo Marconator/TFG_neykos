@@ -1,0 +1,2 @@
+class GatewayAlive < ApplicationRecord
+end

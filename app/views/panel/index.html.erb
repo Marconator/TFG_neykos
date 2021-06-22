@@ -1,0 +1,172 @@
+
+    <div id="wrapper">
+        <%= render "./partials/left_navbar" %>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="nav navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" role="menu" aria-labelledby="searchDropdown">
+                                    <form class="form-inline mr-auto navbar-search w-100">
+                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                            <%= render "./partials/notification_navbar" %>
+                            <div class="d-none d-sm-block topbar-divider"></div>
+                            <%= render "./partials/dropdown_menu" %>
+                    </ul>
+            </div>
+            </nav>
+            <div class="d-sm-flex justify-content-between align-items-center mb-4" style="padding-left: 28px;padding-right: 28px;">
+                <h3 class="text-dark mb-0">Panel principal</h3>
+            </div>
+
+            <div class="container-fluid">
+              <% @clients.each do |client| %>
+              <div class="modal fade" role="dialog" tabindex="-1" id="EditarCliente<%= client.id %>">
+                  <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h4 class="modal-title">Editar cliente</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button></div>
+                                <form method="POST" action="panel/<%= client.id %>" data-remote='true'>
+                                  <input name='_method' type='hidden' value='put' />
+                                <div class="modal-body">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Nombre del cliente:</td>
+                                                    <td><input name="name" aria-describedby="nameHelp" type="text" value="<%= client.name.nil? ? client.client_id : client.name %>" required></input></td>
+                                                    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="modal-footer"><button class="btn btn-light" type="button" data-dismiss="modal">Atrás</button><button class="btn btn-primary" type="submit">Guardar</button></div>
+                                </form>
+                    </div>
+                  </div>
+                </div>
+                <div class="card shadow" style="width: 400px; margin-bottom: 15px; margin-right: 15px">
+                    <div class="card-body" >
+                      <div class="d-flex justify-content-between">
+                          <a class ="collapse-button" data-toggle="collapse" data-target="#a<%= client.id %>" href="">+ <%= client.name.nil? ? client.client_id : client.name %></a>
+                          <% if client.alerts.where("triggered = 'true'").exists? %>
+                          <span class="text-center" style="background-color: #dc3545;color: white;border-radius: 3px;margin: 0px;padding-right: 8px;padding-left: 8px;">ALERT</span>
+                          <% else %>
+                          <span class="text-center" style="background-color: #28a745;color: white;border-radius: 3px;margin: 0px;padding-right: 8px;padding-left: 8px;">OK</span>
+                          <% end %>
+                      </div>
+                      <div id="a<%= client.id %>" class="collapse" style="margin-left: 10px">
+                        <% client.gateways.each do |gateway| %>
+                        <a class ="collapse-button" data-toggle="collapse" aria-expanded="true" data-target="#b<%= client.id %><%= gateway.id %>" href="">- Gateway <%= gateway.gateway_id %></a>
+                        <div id="b<%= client.id %><%= gateway.id %>" class="collapse flex-column show" style="margin-left: 10px">
+                          <a class ="collapse-button" data-toggle="collapse" data-target="#c<%= client.id %><%= gateway.id %>" href="">+ Motores</a>
+                          <div id="c<%= client.id %><%= gateway.id %>" class="collapse" style="margin-left: 10px">
+                          <% gateway.engines.each do |engine| %>
+                            <p><%= engine.name %>
+                              <% if engine.engine_status.last.status == 1 %>
+                                <a class="text-success">OK</a>
+                              <% else %>
+                                <a class="text-danger">OFF</a>
+                              <% end %>
+                            </p>
+                          <% end %>
+                          </div>
+                          <br>
+                          <a class ="collapse-button" data-toggle="collapse" data-target="#d<%= gateway.id %>" href="">+ Dispositivos</a>
+                          <div id="d<%= gateway.id %>" class="collapse" style="margin-left: 10px">
+                            <% gateway.devices.each do |device| %>
+                            <% device_status = device.device_status.last %>
+                            <a class ="collapse-button" data-toggle="collapse" data-target="#a<%= device.name %>" href="">+ <%= device.name %></a>
+                            <div id="a<%= device.name %>" class="collapse" style="margin-left: 10px">
+                              <p> status:
+                                <% if device_status.status == 1 %>
+                                  <a class="text-success">OK</a>
+                                <% else %>
+                                  <a class="text-danger">OFF</a>
+                                <% end %>
+                              </p>
+                              <p> power:
+                                <% if device_status.power == 1 %>
+                                  <a class="text-success">OK</a>
+                                <% else %>
+                                  <a class="text-danger">OFF</a>
+                                <% end %>
+                              </p>
+                              <p> voltaje: <%= device_status.voltage %>
+                              </p>
+                              <p> temperatura: <%= device_status.temperature %>
+                              </p> id de sensores: <%= device.sensors.map { |sensor| sensor.sensor_id }.join(",") %>
+                            </div>
+                            <br>
+                          <% end %>
+                          </div>
+                          <br>
+                          <a class ="collapse-button" data-toggle="collapse" data-target="#<%= client.name.nil? ? client.client_id : client.name %>4" href="">+ Hardware</a>
+                          <div id="<%= client.name.nil? ? client.client_id : client.name %>4" class="collapse" style="margin-left: 10px">
+                            <% hardware = gateway.hardware %>
+                            <% if hardware.present? %>
+                            <p> porcentaje de cpu: <%= hardware.cpu_percent %>
+                            </p>
+                            <p> memoria disponible: <%=  hardware.memory_available%>
+                            </p>
+                            <p> memoria total: <%=  hardware.memory_total %>
+                            </p>
+                            <p> porcentaje de memoria: <%=  hardware.memory_percent %>
+                            </p>
+                            <p> disco disponible: <%=  hardware.disk_free %>
+                            </p>
+                            <p> disco total: <%=  hardware.disk_total %>
+                            </p>
+                            <p> porcentaje de disco: <%=  hardware.disk_percent %>
+                            </p>
+                            <p> temperatura: <%=  hardware.temperature %>
+                            </p>
+                            <% end %>
+                          </div>
+                        </div>
+                        <% end %>
+                        <div class="row" style="padding-top: 14px">
+                          <div class="col-md-8">
+                          </div>
+                          <div class="col-md">
+                            <a class="btn btn-primary" href="notifications?filter%5Blevel%5D=&filter%5Bvariable%5D=&filter%5Bclient%5D=<%= client.id %>&filter%5Bgateway_id%5D=&filter%5Bstart_time_from%5D=">Ver notificaciones</a>
+                          </div>
+                          <div class="col-md">
+                            <button class="btn btn-primary" type="submit" data-toggle="modal" data-target="#EditarCliente<%= client.id %>"><i class="fas fa-edit"></i>Editar nombre</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <% end %>
+          </div>
+      </div>
+
+
+            </div>
+          </div>
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="text-center my-auto copyright"><span>Copyright © Neykos 2020</span></div>
+            </div>
+        </footer>
+            <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+        </div>
+    <script type="text/javascript">
+      $('.collapse-button').click(function(){
+        if(this.text.includes("+")){
+          var a = this.text.replace("+","-");
+          $(this).text(a)
+        } else if (this.text.includes("-")) {
+          var a = this.text.replace("-","+");
+          $(this).text(a)
+        }
+      })
+    </script>

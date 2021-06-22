@@ -1,0 +1,116 @@
+
+    <div id="wrapper">
+        <%= render "./partials/left_navbar" %>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="nav navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" role="menu" aria-labelledby="searchDropdown">
+                                    <form class="form-inline mr-auto navbar-search w-100">
+                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                            <%= render "./partials/notification_navbar" %>
+                            <div class="d-none d-sm-block topbar-divider"></div>
+                            <%= render "./partials/dropdown_menu" %>
+                    </ul>
+            </div>
+            </nav>
+            <div class="d-sm-flex justify-content-between align-items-center mb-4" style="padding-left: 28px;padding-right: 28px;">
+                <h3 class="text-dark mb-0">Notificacion #<%= @notification.id %></h3>
+
+                <form method="POST" action="./" data-remote='true'>
+                  <input name='_method' type='hidden' value='delete' />
+                <a class="btn btn-secondary" role="button" style="color:white;" href="javascript:history.back()">Atrás</a>
+                <button  class="btn btn-danger" data-confirm='¿Deseas eliminar esta alerta?' style="margin-left: 10px; type="submit"><i class="fas fa-trash fa-fw"></i> Eliminar notificación</button>
+                </form></div>
+            <div class="d-flex justify-content-center">
+                <div class="card shadow" style="width: 500px;">
+                    <div class="card-body" >
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Estabilizada</td>
+                                        <td><% if !@notification.triggered %>Sí<% else %>No<% end %></td>
+                                    </tr>
+                                    <tr>
+                                      <td>ID de dispositivo</td>
+                                      <td><%= @notification.alert.element_id %></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Cliente</td>
+                                      <td><%= @notification.alert.client.name %></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Mensaje</td>
+                                      <td><%= @notification.message %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Variable de alerta</td>
+                                        <td> <%= @notification.alert.alert_type.name %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Signo</td>
+                                        <td><% if @notification.alert.sign %>Mayor que<% else %>Menor que<% end %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Límite</td>
+                                        <td> <%= @notification.alert.limit %></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Persistencia</td>
+                                        <td><%= @notification.alert.persistence %> minutos</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nivel de alerta</td>
+                                        <td><%= @notification.notification_level.name %>
+                                          <small id="notificationLevelHelpBlock" class="form-text text-muted">
+                                          <% @notificationLevels.each do |level| %>
+                                              <%= level.name + ": " + level.description  %><br>
+                                          <% end %>
+                                          </small>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                      <td>Notifica en la aplicación</td>
+                                      <td><% if @notification.notify_app %>Sí<% else %>No<% end %></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Notifica por Slack</td>
+                                      <td><% if @notification.notify_slack %>Sí<% else %>No<% end %></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Notifica por correo al cliente</td>
+                                      <td><% if @notification.notify_email %>Sí<% else %>No<% end %></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Hora de inicio</td>
+                                      <td><%= @notification.start_time %></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Hora de estabilización</td>
+                                      <td><% if @notification.end_time.present? %> <%= @notification.end_time%> <% else %>-<% end %></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="text-center my-auto copyright"><span>Copyright © Neykos 2020</span></div>
+            </div>
+        </footer>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a></div>
+    <script type="text/javascript">
+    </script>

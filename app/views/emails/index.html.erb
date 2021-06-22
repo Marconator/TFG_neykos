@@ -1,0 +1,112 @@
+
+    <div id="wrapper">
+        <%= render "./partials/left_navbar" %>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="nav navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" role="menu" aria-labelledby="searchDropdown">
+                                    <form class="form-inline mr-auto navbar-search w-100">
+                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                            <%= render "./partials/notification_navbar" %>
+                            <div class="d-none d-sm-block topbar-divider"></div>
+                            <%= render "./partials/dropdown_menu" %>
+                    </ul>
+            </div>
+            </nav>
+            <div class="d-sm-flex justify-content-between align-items-center mb-4" style="padding-left: 28px;padding-right: 28px;">
+                <h3 class="text-dark mb-0">Correos</h3><a class="btn btn-success btn-sm d-none d-sm-inline-block" role="button" style="color:white;" data-toggle="modal" data-target="#CrearAlerta">Añadir correo</a></div>
+            <div class="modal fade" role="dialog" tabindex="-1" id="CrearAlerta">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Añadir correo</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button></div>
+                            <form method="POST" action="emails" data-remote='true'>
+                              <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Cliente:</td>
+                                            <td>
+                                              <select name="client_id">
+                                                <% @clients.each do |client| %>
+                                                <option value="<%=client.id%>"><%= client.name %></option>
+                                                <% end %>
+                                              </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Correo:</td>
+                                            <td><input name="email" type="email" required></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer"><button class="btn btn-light" type="button" data-dismiss="modal">Atrás</button><button class="btn btn-primary" type="submit">Guardar</button></div>
+                            </form>
+                    </div>
+                </div>
+            </div>
+            <% flash.each do |type, msg| %>
+              <% if type == "alert_error" %>
+                <div role="alert" class="alert alert-danger"><span><strong>Error: </strong> <%= msg %></span></div>
+              <% elsif type == "alert_success" %>
+                <div role="alert" class="alert alert-success"><span><strong><%= msg %></strong></span></div>
+              <% end %>
+            <% end %>
+            <div class="container-fluid">
+              <div class="row">
+              <% @clients.each do |client| %>
+                <div class="card shadow" style="width: 400px; margin-bottom: 15px; margin-right: 15px">
+                    <div class="card-body">
+                      <h3 class="text-dark mb-0"><%= client.name %></h3>
+                        <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                            <table class="table dataTable my-0" id="dataTable">
+                                <tbody>
+                                  <% if client.emails.empty? %>
+                                    No se han agregado correos aún.
+                                  <% else %>
+                                    <% client.emails.each do |email| %>
+                                      <tr >
+                                          <td style="width:70%"><%= email.email %></td>
+                                          <td>
+                                            <form method="POST" action="/emails/<%= email.id %>" data-remote='true'>
+                                              <input name='_method' type='hidden' value='delete' />
+                                            <button class="btn btn-danger btn-sm d-none d-sm-inline-block" data-confirm='¿Deseas eliminar este correo?'>Eliminar</button>
+                                            </form>
+                                          </td>
+                                      </tr>
+                                    <% end %>
+                                  <% end %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <% end %>
+            </div>
+          </div>
+        </div>
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="text-center my-auto copyright"><span>Copyright © Neykos 2020</span></div>
+            </div>
+        </footer>
+      </div>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+  </div>
+    <script type="text/javascript">
+    </script>

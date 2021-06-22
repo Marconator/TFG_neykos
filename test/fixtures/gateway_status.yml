@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  id: 1
+  gateway_id: 1
+  updated_at: Fecha
+
+two:
+  id: 2
+  gateway_id: 2
+  updated_at: Fecha

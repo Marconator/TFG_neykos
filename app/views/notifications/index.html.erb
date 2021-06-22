@@ -1,0 +1,192 @@
+
+    <div id="wrapper">
+      <%= render "./partials/left_navbar" %>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="nav navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" role="menu" aria-labelledby="searchDropdown">
+                                    <form class="form-inline mr-auto navbar-search w-100">
+                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                            <%= render "./partials/notification_navbar" %>
+                            <div class="d-none d-sm-block topbar-divider"></div>
+                            <%= render "./partials/dropdown_menu" %>
+                    </ul>
+            </div>
+            </nav>
+            <div class="d-sm-flex justify-content-between align-items-center mb-4" style="padding-left: 28px;padding-right: 28px;">
+                <h3 class="text-dark mb-0">Notificaciones</h3>
+            </div>
+            <div class="container-fluid">
+              <div class="card shadow">
+    <div class="card-body">
+      <form method="GET" action="/notifications">
+        <div class="row align-items-center" style="padding-bottom:1.5rem">
+            <div class="col">
+                <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
+                    <label for="level" style="padding-right:5px">Nivel de alerta:</label>
+                    <select name="filter[level]" id="level" style="width:60px; margin-right:10px" class="form-control form-control-sm custom-select custom-select-sm" >
+                      <option value=""></option>
+                      <% @notificationLevels.each do |level| %>
+                      <option value="<%=level.id%>" <% if @filterLevel == level.id.to_s%> selected <% end %>><%= level.id %></option>
+                      <% end %>
+                    </select>
+                    <label for="variable" style="padding-right:5px">Variable de alerta:</label>
+                    <select name="filter[variable]" id="variable" style="width:150px; margin-right:10px" class="form-control form-control-sm custom-select custom-select-sm">
+                      <option value=""></option>
+                      <% @notificationVariables.each do |variable| %>
+                      <option value="<%=variable.id%>" <% if @filterVariable == variable.id.to_s%> selected <% end %>><%= variable.name %></option>
+                      <% end %>
+                    </select>
+                    <label for="client" style="padding-right:5px">Cliente:</label>
+                    <select name="filter[client]" id="client" style="width:90px; margin-right:10px" class="form-control form-control-sm custom-select custom-select-sm">
+                      <option value=""></option>
+                      <% @clients.each do |client| %>
+                      <option value="<%=client.id%>" <% if @filterClient == client.id.to_s%> selected <% end %>><%= client.name %></option>
+                      <% end %>
+                    </select>
+                    <label for="gateway_id" style="padding-right:5px">ID del gateway:</label>
+                    <input name="filter[gateway_id]" id="gateway_id" style="width:70px; height:31px; margin-right:10px; display:inline" type="number" min="0" class="form-control form-control-sm" <% if @filterGatewayId.present? %> value="<%= @filterGatewayId %>" <% end %>>
+                    <label for="start_time_from" style="padding-right:5px;">Ver notificaciones de:</label>
+                    <select name="filter[start_time_from]" id="start_time_from" style="width:160px; margin-right:10px" class="form-control form-control-sm custom-select custom-select-sm">
+                      <option value=""></option>
+                      <option value="1" <% if @filterStartFrom == "1"%> selected <% end %>>Hoy</option>
+                      <option value="2" <% if @filterStartFrom == "2"%> selected <% end %>>Ayer</option>
+                      <option value="3" <% if @filterStartFrom == "3"%> selected <% end %>>Esta semana</option>
+                      <option value="4" <% if @filterStartFrom == "4"%> selected <% end %>>La semana pasada</option>
+                      <option value="5" <% if @filterStartFrom == "5"%> selected <% end %>>Este mes</option>
+                      <option value="6" <% if @filterStartFrom == "6"%> selected <% end %>>El mes pasado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-2 text-center">
+              <button class="btn btn-secondary" type="submit">Filtrar</button>
+            </div>
+        </div>
+      </form>
+        <% @notifications.each do |notification| %>
+          <div class="card"
+          <% if !notification.triggered %>
+          style="background-color:#efeeee;border-color:#adb0ba">
+          <% else %>
+          <% case notification.notification_level_id %>
+          <% when 1 %>
+          style="background-color:#000dff1c;border-color:#adb0ba">
+          <% when 2 %>
+          style="background-color:#f4ff001c;border-color:#adb0ba">
+          <% when 3 %>
+          style="background-color:#ffe5e5;border-color:#adb0ba">
+          <% end %>
+          <% end %>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-10">
+                  <div class="row">
+                    <div class="col-sm">
+                      <% if !notification.triggered %>
+                      <div class="bg-success icon-circle">
+                      <% else %>
+                      <% case notification.notification_level_id %>
+                      <% when 1 %>
+                        <div class="bg-primary icon-circle">
+                      <% when 2 %>
+                        <div class="bg-warning icon-circle">
+                      <% when 3 %>
+                        <div class="bg-danger icon-circle">
+                      <% end %>
+                      <% end %>
+                      <% if notification.triggered %>
+                        <i class="fas fa-exclamation-triangle text-white"></i>
+                      <% else %>
+                        <i class="fas fa-check text-white"></i>
+                      <% end %>
+                        </div>
+                  <h6 class="text-muted card-subtitle mb" style="padding-top: 14px"><%= notification.notification_level.name %>
+                  </h6>
+                </div>
+                <div class="col-11">
+                  <h4 class="card-title"  style="padding-top: 14px">Notificación #<%= notification.id %>
+                  <% if !notification.triggered %>
+                  <span class="text-success">(Estabilizado)</span>
+                  <% end %>
+                  </h4>
+                </div>
+            </div>
+                  <p style="padding-top: 14px"><%= notification.message %></p>
+                  <div class="row">
+                      <div class="col-4">
+                        Inicio: <%= notification.start_time %>
+                      </div>
+                      <div class="col">
+                        <% if !notification.triggered %>
+                        Estabilización: <%= notification.end_time %>
+                        <% end %>
+                      </div>
+                  </div>
+                </div>
+                <div class="col-sm text-center align-self-center">
+                  <a class="btn btn-primary" role="button" style="color:white;" href="/notifications/<%= notification.id %>">Ver detalles</a>
+                </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+        <div class="row" style="padding-top: 14px">
+            <div class="col-md-6 align-self-center">
+                <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando <%= (@count > 1) ? (@offset +1) : 0  %> a <%= (@count > @offset +@limit) ? (@offset +@limit) : @count%> de <%= @count%></p>
+            </div>
+            <div class="col-md-6">
+                <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                  <ul class="pagination">
+                      <li class="page-item"><a class="page-link" href="
+                        <% if request.fullpath.include?('page') %>
+                        <%= request.fullpath.gsub("page=#{@page}", "page=#{1}") %>
+                        <%  elsif @filterLevel.present? %>
+                        <%= request.fullpath + "&page=#{1}" %>
+                        <% else %>
+                        <%= request.fullpath + "page=#{1}" %>
+                        <% end %>
+                        " aria-label="First"><span aria-hidden="true">«</span></a></li>
+                      <% @totalPages.times do |i|%>
+                      <li class="page-item <% if @page == i+1%>active<%end%>"><a class="page-link" href="
+                          <% if request.fullpath.include?('page') %>
+                          <%= request.fullpath.gsub("page=#{@page}", "page=#{i+1}") %>
+                          <%  elsif params[:filter].present? %>
+                          <%= request.fullpath + "&page=#{i+1}" %>
+                          <% else %>
+                          <%= request.fullpath + "?page=#{i+1}" %>
+                          <% end %>
+                          "><%= i+1 %></a></li>
+                      <% end %>
+                      <li class="page-item"><a class="page-link" href="
+                        <% if request.fullpath.include?('page') %>
+                        <%= request.fullpath.gsub("page=#{@page}", "page=#{@totalPages}") %>
+                        <%  elsif @filterLevel.present? %>
+                        <%= request.fullpath + "&page=#{@totalPages}" %>
+                        <% else %>
+                        <%= request.fullpath + "?page=#{@totalPages}" %>
+                        <% end %>
+                        " aria-label="Last"><span aria-hidden="true">»</span></a></li>
+                  </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+            </div>
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="text-center my-auto copyright"><span>Copyright © Neykos 2020</span></div>
+            </div>
+        </footer>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a></div>
+    <script type="text/javascript">
+    </script>
